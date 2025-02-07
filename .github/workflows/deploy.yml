@@ -24,7 +24,7 @@ jobs:
         working-directory: ./example
 
       - name: Build Web App
-        run: flutter build web --release --web-renderer html --base-href="/my_json_view/" # Important: --base-href
+        run: flutter build web --release --wasm --base-href="/my_json_view/" # Important: --base-href
         working-directory: ./example
 
       - name: Deploy to GitHub Pages

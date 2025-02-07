@@ -1,0 +1,36 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Or your default branch (e.g., master)
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x.x'  # Use a specific Flutter version, e.g., '3.16.0'
+          channel: 'stable'
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+        working-directory: ./example
+
+      - name: Build Web App
+        run: flutter build web --release --web-renderer html --base-href="/my_json_view/" # Important: --base-href
+        working-directory: ./example
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./example/build/web  # Path to the built web app
+          # publish_branch: gh-pages  # Optional: Specify a branch (defaults to gh-pages)
+          # cname: your-custom-domain.com  # Optional: If you have a custom domain

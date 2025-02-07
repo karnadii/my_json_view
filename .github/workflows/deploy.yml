@@ -30,7 +30,7 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.DEPLOY_TOKEN }}
           publish_dir: ./example/build/web  # Path to the built web app
           # publish_branch: gh-pages  # Optional: Specify a branch (defaults to gh-pages)
           # cname: your-custom-domain.com  # Optional: If you have a custom domain

@@ -251,15 +251,15 @@ class _MyJsonViewState extends State<MyJsonView> {
   /// Builds a [TextSpan] for a primitive value (String, number, boolean, or null).
   TextSpan _buildValueTextSpan(BuildContext context, dynamic data) {
     // Use a switch statement for slightly better performance and readability.
-    switch (data.runtimeType) {
-      case String:
-        return _buildValueSpan(context, '"$data"', _style.stringTextStyle);
-      case num:
-        return _buildValueSpan(context, data.toString(), _style.numberTextStyle);
-      case bool:
-        return _buildValueSpan(context, data.toString(), _style.booleanTextStyle);
-      default: // Handles null and other types
-        return _buildValueSpan(context, data.toString(), _style.nullTextStyle);
+    if (data is String) {
+      return _buildValueSpan(context, '"$data"', _style.stringTextStyle);
+    } else if (data is num) {
+      return _buildValueSpan(context, data.toString(), _style.numberTextStyle);
+    } else if (data is bool) {
+      return _buildValueSpan(context, data.toString(), _style.booleanTextStyle);
+    } else {
+      // Handles null and other types
+      return _buildValueSpan(context, data.toString(), _style.nullTextStyle);
     }
   }
 

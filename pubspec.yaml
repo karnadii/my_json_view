@@ -6,8 +6,8 @@ repository: https://github.com/karnadii/my_json_view
 issue_tracker: https://github.com/karnadii/my_json_view/issues
 
 environment:
-  sdk: '>=2.17.0 <4.0.0'
-  flutter: '>=3.16.0'
+  sdk: ^3.6.1
+  flutter: ">=1.17.0"
 
 dependencies:
   flutter:
@@ -16,6 +16,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0 # Or your preferred linter
+  flutter_lints: ^5.0.0 # Or your preferred linter
 
 # The "flutter" section is usually not needed for a simple widget package.

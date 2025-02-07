@@ -232,8 +232,10 @@ class _MyHomePageState extends State<MyHomePage> {
   // Handle search input changes with debounce to reduce filter operations.
   void _onSearchChanged(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      _jsonViewController.filter(value); // Filter the JSON tree view
+    _debounce = Timer(const Duration(milliseconds: 280), () {
+      setState(() {
+        _jsonViewController.filter(value); // Filter the JSON tree view
+      });
     });
   }
 
@@ -248,7 +250,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   setState(() {
                     _isSearching = false;
                     _searchController.clear();
-                    _jsonViewController.clearFilter();
+                    setState(() {
+                      _jsonViewController.clearFilter();
+                    });
                   });
                 },
               )

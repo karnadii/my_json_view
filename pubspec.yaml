@@ -16,6 +16,4 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0 # Or your preferred linter
-
-# The "flutter" section is usually not needed for a simple widget package.
+  flutter_lints: ^5.0.0

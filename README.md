@@ -1,4 +1,5 @@
 
+[![pub package](https://img.shields.io/pub/v/my_json_view.svg)](https://pub.dev/packages/my_json_view)
 # MyJsonView
 
 A customizable Flutter widget for displaying JSON data in a user-friendly, expandable, and searchable tree view.
@@ -149,3 +150,5 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+

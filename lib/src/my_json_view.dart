@@ -253,7 +253,7 @@ class _MyJsonViewState extends State<MyJsonView> {
     // Use a switch statement for slightly better performance and readability.
     switch (data.runtimeType) {
       case String:
-        return _buildValueSpan(context, '"${data}"', _style.stringTextStyle);
+        return _buildValueSpan(context, '"$data"', _style.stringTextStyle);
       case num:
         return _buildValueSpan(context, data.toString(), _style.numberTextStyle);
       case bool:

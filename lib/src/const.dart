@@ -3,7 +3,6 @@
 /// These constants define default values for visual aspects of the JSON view,
 /// such as indentation and icon sizes. They are used internally by the
 /// widgets to maintain a consistent appearance.
-library;
 
 /// The size of the expand/collapse icon.
 const double kExpandIconSize = 16;

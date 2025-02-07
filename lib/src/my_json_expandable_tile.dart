@@ -185,7 +185,7 @@ class _JsonExpandableTileState extends State<JsonExpandableTile> {
                         isExpanded: _isExpanded,
                         padding: EdgeInsets.zero,
                       )
-                    : SizedBox(
+                    : const SizedBox(
                         width: kExpandIconSize,
                         height: kExpandIconSize,
                       ),
@@ -258,13 +258,13 @@ class _BracketBorderPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
     // Draw top horizontal line
     canvas.drawLine(
-      Offset(0, kIndent),
-      Offset(topStrokeLength, kIndent),
+      const Offset(0, kIndent),
+      const Offset(topStrokeLength, kIndent),
       paint,
     );
     // Draw vertical line
     canvas.drawLine(
-      Offset(0, kIndent),
+      const Offset(0, kIndent),
       Offset(0, size.height - bottomOffset),
       paint,
     );

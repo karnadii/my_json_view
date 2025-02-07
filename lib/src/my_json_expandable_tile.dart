@@ -41,18 +41,39 @@ import 'my_json_view_controller.dart';
 /// ```
 /// {@endtemplate}
 class JsonExpandableTile extends StatefulWidget {
+  /// Creates a [JsonExpandableTile].
+  ///
+  /// The [headerExpanded], [headerCollapsed], [children], [isRoot], and
+  /// [childrenLength] arguments are required. The [controller] is optional
+  /// and should only be provided for non-root tiles.  The [showIndentGuide]
+  /// flag controls the visibility of the indent guide.
+  const JsonExpandableTile({
+    super.key,
+    required this.headerExpanded,
+    required this.headerCollapsed,
+    this.indent,
+    this.footer,
+    this.controller,
+    required this.children,
+    required this.isRoot,
+    this.showIndentGuide = true,
+    required this.childrenLength,
+  });
+
   /// The widget to display as the header when the tile is expanded.
   final Widget headerExpanded;
 
   /// The widget to display as the header when the tile is collapsed.
   final Widget headerCollapsed;
 
-  /// The indentation level of this tile.  Used to calculate the position
-  /// of the indent guide.
+  /// The indentation level of this tile.
+  ///
+  /// Used to calculate the position of the indent guide.
   final double? indent;
 
-  /// An optional widget to display at the bottom of the tile's children,
-  /// typically used to show the closing bracket of an object or array.
+  /// An optional widget to display at the bottom of the tile's children.
+  ///
+  /// This is typically used to show the closing bracket of an object or array.
   final Widget? footer;
 
   /// The controller that manages the expansion state of the JSON view.
@@ -74,23 +95,11 @@ class JsonExpandableTile extends StatefulWidget {
   /// The number of children.
   final int childrenLength;
 
-  /// Whether to show the vertical indent guide line.  This is usually
-  /// controlled by the [MyJsonViewStyle.showIndentGuide] property.
+  /// Whether to show the vertical indent guide line.
+  ///
+  /// This is usually controlled by the [MyJsonViewStyle.showIndentGuide]
+  /// property.
   final bool showIndentGuide;
-
-  /// Creates a [JsonExpandableTile].
-  const JsonExpandableTile({
-    super.key,
-    required this.headerExpanded,
-    required this.headerCollapsed,
-    this.indent,
-    this.footer,
-    this.controller,
-    required this.children,
-    required this.isRoot,
-    this.showIndentGuide = true,
-    required this.childrenLength,
-  });
 
   @override
   State<JsonExpandableTile> createState() => _JsonExpandableTileState();
@@ -167,32 +176,45 @@ class _JsonExpandableTileState extends State<JsonExpandableTile> {
         : Colors.transparent;
     final Widget header = _isExpanded ? widget.headerExpanded : widget.headerCollapsed;
     return CustomPaint(
-      painter: _BracketBorderPainter(
+      painter: _MyIndentGuidePainter(
         color: effectiveColor,
         strokeWidth: 1.0,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GestureDetector(
-            onTap: _toggleExpanded,
-            child: Row(
-              children: [
-                widget.childrenLength > 0
-                    ? MyExpandIcon(
-                        onPressed: (_) => _toggleExpanded(),
-                        size: kExpandIconSize,
-                        isExpanded: _isExpanded,
-                        padding: EdgeInsets.zero,
-                      )
-                    : const SizedBox(
-                        width: kExpandIconSize,
-                        height: kExpandIconSize,
-                      ),
-                const SizedBox(width: 2),
-                Expanded(child: header),
-              ],
-            ),
+          Stack(
+            children: [
+              Row(
+                children: [
+                  widget.childrenLength > 0
+                      ? MyExpandIcon(
+                          onPressed: (_) => _toggleExpanded(),
+                          size: kExpandIconSize,
+                          isExpanded: _isExpanded,
+                          padding: EdgeInsets.zero,
+                        )
+                      : const SizedBox(
+                          width: kExpandIconSize,
+                          height: kExpandIconSize,
+                        ),
+                  const SizedBox(width: 2),
+                  Expanded(
+                    child: header,
+                  ),
+                ],
+              ),
+              // The InkWell overlay is transparent and covers the whole header row.
+              // It toggles expansion when tapped.
+              Positioned.fill(
+                child: InkWell(
+                  onTap: _toggleExpanded,
+                  // Set splashColor to transparent if you don’t want a visual effect
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                ),
+              ),
+            ],
           ),
           if (_isExpanded && widget.childrenLength > 0)
             Padding(
@@ -217,8 +239,10 @@ class _JsonExpandableTileState extends State<JsonExpandableTile> {
     );
   }
 
-  /// Toggles the expanded state of the tile.  This method is called when
-  /// the user taps the expand/collapse icon.
+  /// Toggles the expanded state of the tile.
+  ///
+  /// This method is called when the user taps the expand/collapse icon or
+  /// the header.
   void _toggleExpanded() {
     setState(() {
       _isExpanded = !_isExpanded;
@@ -231,7 +255,16 @@ class _JsonExpandableTileState extends State<JsonExpandableTile> {
 /// The [color] determines whether or not the guide is visible.  If the
 /// color is transparent, the painter effectively does nothing.  The
 /// [strokeWidth] controls the thickness of the lines.
-class _BracketBorderPainter extends CustomPainter {
+class _MyIndentGuidePainter extends CustomPainter {
+  /// Creates a [_MyIndentGuidePainter].
+  ///
+  /// The [color] is required and determines the color of the lines.  The
+  /// [strokeWidth] defaults to 1.0.
+  _MyIndentGuidePainter({
+    required this.color,
+    this.strokeWidth = 1.0,
+  });
+
   /// The color of the indent guide lines.
   final Color color;
 
@@ -242,13 +275,7 @@ class _BracketBorderPainter extends CustomPainter {
   static const double topStrokeLength = 2;
 
   /// The vertical offset of the bottom horizontal stroke of the indent guide.
-  static const double bottomOffset = 8;
-
-  /// Creates a [_BracketBorderPainter].
-  _BracketBorderPainter({
-    required this.color,
-    this.strokeWidth = 1.0,
-  });
+  static const double bottomOffset = 9;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -264,7 +291,7 @@ class _BracketBorderPainter extends CustomPainter {
     );
     // Draw vertical line
     canvas.drawLine(
-      const Offset(0, kIndent),
+      const Offset(0, bottomOffset),
       Offset(0, size.height - bottomOffset),
       paint,
     );

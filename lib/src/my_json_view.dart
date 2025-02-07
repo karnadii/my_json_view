@@ -9,58 +9,56 @@ import 'my_json_view_controller.dart';
 /// and searchable tree view.
 ///
 /// `MyJsonView` takes JSON data (either as a `String`, `Map`, or `List`) and
-/// renders it as an interactive tree.  Users can expand and collapse nodes,
+/// renders it as an interactive tree. Users can expand and collapse nodes,
 /// search for specific keys or values, and customize the appearance using
 /// [MyJsonViewStyle].
 ///
 /// The widget uses a [MyJsonViewController] to manage the expansion state and
-/// search query.  You can either provide your own controller (e.g., using
-/// `Provider`) or let the widget create a default one internally.
+/// search query. You may provide your own controller (e.g., via Provider) or
+/// allow the widget to create a default instance internally.
 ///
-/// The search functionality highlights matches within the JSON tree. The
-/// highlighting is applied to both keys and values.
+/// The search functionality highlights matches within the JSON tree. Both keys
+/// and values are highlighted when appropriate.
 ///
-/// **Example:**
+/// {@template MyJsonView.example}
+/// **Example Usage:**
 ///
 /// ```dart
-/// // Simple usage with a JSON string:
-/// MyJsonView.string(
-///   jsonString: '{ "name": "John Doe", "age": 30 }',
-/// )
-///
-/// // Usage with a Map and a custom controller:
-/// final controller = MyJsonViewController();
+/// // Basic usage with a JSON string:
 /// MyJsonView(
-///   json: {'name': 'Jane Doe', 'age': 25},
+///   json: '{ "name": "John Doe", "age": 30 }',
+///   controller: MyJsonViewController(), // Or any instance
+/// );
+///
+/// // Using a controller for more control:
+/// final controller = MyJsonViewController();
+///
+/// MyJsonView(
+///   json: myJsonObject,  // Could be Map, List, or String
 ///   controller: controller,
-///   style: MyJsonViewStyle(keyColor: Colors.red),
-/// )
+/// );
 ///
-/// // Usage with a List, custom style, and search:
-/// final controller = MyJsonViewController();
+/// // Later, you can use the controller:
+/// controller.expandAll();
+/// controller.filter('John');
+///
+/// // Customizing the style:
 /// MyJsonView(
-///    json: [1, 2, {'a': 3}],
-///    controller: controller,
-///    style: MyJsonViewStyle.defaultStyle(),
-///  );
-///  controller.filter('3'); // Highlights the '3' in the nested object
-///
+///  json: myJsonData,
+///  style: MyJsonViewStyle(
+///    keyColor: Colors.blue,
+///    stringColor: Colors.green,
+///  ),
+///  controller: MyJsonViewController(),
+/// );
 /// ```
-///
+/// {@endtemplate}
 class MyJsonView extends StatefulWidget {
-  /// The JSON data to display.  This can be a `Map`, a `List`, or a
-  /// JSON-encoded `String`.
-  final Object json;
-
-  /// The style to use for rendering the JSON view.  If `null`, a default
-  /// style is used ([MyJsonViewStyle.defaultStyle]).
-  final MyJsonViewStyle? style;
-
-  /// The controller for managing the expansion state and search query.
-  /// If not provided a new controller instance get created.
-  final MyJsonViewController controller;
-
   /// Creates a [MyJsonView] from a JSON object ([Map] or [List]).
+  ///
+  /// The [json] argument is required. The [style] argument is optional
+  /// and defaults to [MyJsonViewStyle.defaultStyle]. The [controller]
+  /// argument is required to manage the state.
   const MyJsonView({
     super.key,
     required this.json,
@@ -68,22 +66,15 @@ class MyJsonView extends StatefulWidget {
     this.style,
   });
 
-  /// Creates a [MyJsonView] from a JSON string.
-  ///
-  /// This is a convenience constructor that parses the [jsonString] using
-  /// [MyJsonViewController]'s internal parsing logic.
-  factory MyJsonView.string({
-    Key? key,
-    required String jsonString,
-    MyJsonViewStyle? style,
-    required MyJsonViewController controller,
-  }) =>
-      MyJsonView(
-        key: key,
-        json: jsonString,
-        style: style,
-        controller: controller,
-      );
+  /// The JSON data to display. This can be a `Map`, a `List`, or a JSON-encoded `String`.
+  final Object json;
+
+  /// The style to use for rendering the JSON view. Defaults to [MyJsonViewStyle.defaultStyle] if `null`.
+  final MyJsonViewStyle? style;
+
+  /// The controller to manage expansion state and search query.
+  /// If not provided a new controller instance gets created.
+  final MyJsonViewController controller;
 
   @override
   State<MyJsonView> createState() => _MyJsonViewState();
@@ -105,23 +96,21 @@ class _MyJsonViewState extends State<MyJsonView> {
     if (widget.style != oldWidget.style) {
       _style = widget.style ?? MyJsonViewStyle.defaultStyle();
     }
-    // Only update the json if the controller or the json itself changes.
+    // Update JSON only if the controller or the JSON itself changes.
     if (widget.controller != oldWidget.controller || widget.json != oldWidget.json) {
       widget.controller.json = widget.json;
     }
   }
 
-  /// Highlights search query matches within the provided text.
-  ///
-  /// This method searches for the current [widget.controller.filterQuery]
-  /// within the given [text] and returns a list of [InlineSpan]s.  Matches
-  /// are highlighted with a yellow background.  The search is case-insensitive.
+  /// Highlights search query matches within [text] using [style].
   List<InlineSpan> _highlightText(String text, TextStyle style) {
     final query = widget.controller.filterQuery;
     if (query.isEmpty) return [TextSpan(text: text, style: style)];
 
-    final regex = RegExp.escape(query); // No need to create a new RegExp every time
-    final matches = regex.allMatches(text.toLowerCase()); // Use toLowerCase() for case-insensitive search
+    // Case-insensitive matching.
+    final escapedQuery = RegExp.escape(query);
+    final lowerText = text.toLowerCase();
+    final matches = RegExp(escapedQuery).allMatches(lowerText);
     if (matches.isEmpty) return [TextSpan(text: text, style: style)];
 
     final spans = <InlineSpan>[];
@@ -142,62 +131,51 @@ class _MyJsonViewState extends State<MyJsonView> {
     return spans;
   }
 
-  /// Creates a [SelectableText.rich] widget from a list of [InlineSpan]s.
+  /// Wraps a list of [InlineSpan]s in a [SelectableText.rich] widget.
   Widget _selectableText(List<InlineSpan> spans) {
     return SelectableText.rich(
       TextSpan(children: spans),
+      showCursor: true,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    // final effectiveJson = widget.controller.isFiltered ? widget.controller.filteredJson : widget.controller.json;
     final effectiveJson = widget.controller.json;
-    // Use a ListView.builder for the top-level as well, for performance with large JSON objects.
     return ListView.builder(
-      itemCount: 1, // Top level is always 1 item (the root)
+      itemCount: 1,
       itemBuilder: (context, index) {
         return Padding(
           padding: const EdgeInsets.all(8.0),
-          child: _buildJsonTree(
-            context,
-            effectiveJson,
-            isRoot: true,
-            keyName: 'root',
-          ),
+          child: _buildJsonTree(context, effectiveJson, isRoot: true, keyName: 'root'),
         );
       },
     );
   }
 
-  /// Recursively builds the JSON tree based on the data type.
-  ///
-  /// This method handles [Map], [List], and primitive types (String, num,
-  /// bool, null).  It calls the appropriate builder method for each type.
+  /// Recursively builds the JSON tree according to the data type.
   Widget _buildJsonTree(
     BuildContext context,
-    dynamic filteredJsonData, {
+    dynamic data, {
     String? keyName,
     bool isRoot = false,
   }) {
-    if (filteredJsonData is Map) {
-      return _buildMapNode(context, filteredJsonData, keyName: keyName, isRoot: isRoot);
-    } else if (filteredJsonData is List) {
-      return _buildListNode(context, filteredJsonData, keyName: keyName, isRoot: isRoot);
+    if (data is Map) {
+      return _buildMapNode(context, data, keyName: keyName, isRoot: isRoot);
+    } else if (data is List) {
+      return _buildListNode(context, data, keyName: keyName, isRoot: isRoot);
     } else {
-      return _buildPrimitiveNode(context, filteredJsonData, keyName: keyName);
+      return _buildPrimitiveNode(context, data, keyName: keyName);
     }
   }
 
-  /// Builds a widget for brackets, only when enabled.
+  /// Returns a widget for brackets if enabled.
   Widget _buildBracketWidget(BuildContext context, String symbol) {
     if (!_style.showStartAndEndBrackets) return const SizedBox.shrink();
     return Text(symbol, style: _style.bracketTextStyle);
   }
 
-  /// Builds a string representation of the object/array count.
-  ///
-  /// The output depends on the [style] (truncated, concise, or annotated).
+  /// Returns a string representation of object/array count based on the style.
   String _buildCountString(int count, String label, ObjectInfoStyle style) {
     switch (style) {
       case ObjectInfoStyle.truncated:
@@ -209,7 +187,7 @@ class _MyJsonViewState extends State<MyJsonView> {
     }
   }
 
-  /// Builds a title with key (if provided), starting bracket and optionally a comment.
+  /// Constructs a title widget including the key (if provided), brackets and comment.
   Widget _buildKeyValueTitleWithInfo(
     BuildContext context,
     String? key,
@@ -222,35 +200,45 @@ class _MyJsonViewState extends State<MyJsonView> {
     if (key != null) spans.add(_buildKeySpan(context, key));
 
     spans.add(TextSpan(text: bracketStart, style: _style.bracketTextStyle));
-
     spans.add(TextSpan(
-        text: comment,
-        style: italic ? _style.metaTextStyle : _style.metaTextStyle.copyWith(fontStyle: FontStyle.normal)));
-
+      text: comment,
+      style: italic ? _style.metaTextStyle : _style.metaTextStyle.copyWith(fontStyle: FontStyle.normal),
+    ));
     spans.add(TextSpan(text: bracketEnd, style: _style.bracketTextStyle));
 
     return Align(alignment: Alignment.topLeft, child: _selectableText(spans));
   }
 
-  /// Builds a [TextSpan] for a key, including the colon and highlighting.
+  /// Constructs a text span for a key including highlighting and colon separation.
   TextSpan _buildKeySpan(BuildContext context, String key) {
+    final listIndexPattern = RegExp(r'^\[(\d+)\]');
+    if (listIndexPattern.hasMatch(key)) {
+      final match = listIndexPattern.firstMatch(key)!;
+      final index = match.group(1)!;
+      return TextSpan(
+        children: [
+          TextSpan(text: '[', style: _style.bracketTextStyle),
+          TextSpan(text: index, style: _style.bracketTextStyle),
+          TextSpan(text: ']', style: _style.bracketTextStyle),
+          TextSpan(text: ' : ', style: _style.bracketTextStyle),
+        ],
+      );
+    }
     return TextSpan(
       children: [
         ..._highlightText(key, _style.keyTextStyle),
-        // Use a single TextSpan for the colon, it's more efficient.
         TextSpan(text: ' : ', style: _style.bracketTextStyle),
       ],
     );
   }
 
-  /// Builds a [TextSpan] for a value, with highlighting.
+  /// Constructs a text span for a value with highlighting.
   TextSpan _buildValueSpan(BuildContext context, String value, TextStyle style) {
     return TextSpan(children: _highlightText(value, style));
   }
 
-  /// Builds a [TextSpan] for a primitive value (String, number, boolean, or null).
+  /// Returns a [TextSpan] for a primitive type (String, number, bool, or null).
   TextSpan _buildValueTextSpan(BuildContext context, dynamic data) {
-    // Use a switch statement for slightly better performance and readability.
     if (data is String) {
       return _buildValueSpan(context, '"$data"', _style.stringTextStyle);
     } else if (data is num) {
@@ -258,27 +246,24 @@ class _MyJsonViewState extends State<MyJsonView> {
     } else if (data is bool) {
       return _buildValueSpan(context, data.toString(), _style.booleanTextStyle);
     } else {
-      // Handles null and other types
       return _buildValueSpan(context, data.toString(), _style.nullTextStyle);
     }
   }
 
-  /// Builds a [JsonExpandableTile] for a [Map] node.
-  Widget _buildMapNode(
-    BuildContext context,
-    Map map, {
+  /// Helper to extract common expandable header construction logic.
+  Map<String, Widget> _buildHeaders({
     String? keyName,
-    bool isRoot = false,
+    required int count,
+    required String openBracket,
+    required String closeBracket,
+    required String infoLabel,
   }) {
-    final int count = map.length;
-    final entries = map.entries.toList(); // Convert to list once, reuse
-    final String comment = _buildCountString(count, _style.propsInfoLabel, _style.objectInfoStyle);
-
-    // Pre-calculate header widgets
+    final comment = _buildCountString(count, infoLabel, _style.objectInfoStyle);
+    // Expanded header adapts based on style flags.
     final headerExpanded = _buildKeyValueTitleWithInfo(
       context,
       keyName,
-      _style.alwaysShowObjectCount || _style.showStartAndEndBrackets || count == 0 ? '{' : '',
+      _style.alwaysShowObjectCount || _style.showStartAndEndBrackets || count == 0 ? openBracket : '',
       _style.alwaysShowObjectCount && !_style.showStartAndEndBrackets
           ? comment
           : _style.alwaysShowObjectCount &&
@@ -288,38 +273,58 @@ class _MyJsonViewState extends State<MyJsonView> {
               ? ' // $comment '
               : '',
       _style.alwaysShowObjectCount && !_style.showStartAndEndBrackets
-          ? '}'
+          ? closeBracket
           : count == 0
-              ? '0}'
+              ? '0$closeBracket'
               : '',
       _style.showStartAndEndBrackets,
     );
+    // Collapsed header always uses the basic bracket notation.
     final headerCollapsed = _buildKeyValueTitleWithInfo(
       context,
       keyName,
-      '{',
+      openBracket,
       comment,
-      '}',
+      closeBracket,
       false,
     );
+    return {
+      'expanded': headerExpanded,
+      'collapsed': headerCollapsed,
+    };
+  }
 
+  /// Builds a widget for a Map node.
+  Widget _buildMapNode(
+    BuildContext context,
+    Map map, {
+    String? keyName,
+    bool isRoot = false,
+  }) {
+    final count = map.length;
+    final headers = _buildHeaders(
+      keyName: keyName,
+      count: count,
+      openBracket: '{',
+      closeBracket: '}',
+      infoLabel: _style.propsInfoLabel,
+    );
     return JsonExpandableTile(
       childrenLength: count,
-      headerExpanded: headerExpanded,
-      headerCollapsed: headerCollapsed,
+      headerExpanded: headers['expanded']!,
+      headerCollapsed: headers['collapsed']!,
       indent: kIndent,
       controller: widget.controller,
       isRoot: isRoot,
       footer: _style.showStartAndEndBrackets ? _buildBracketWidget(context, '}') : const SizedBox.shrink(),
       showIndentGuide: _style.showIndentGuide,
       children: [
-        // Use ListView.builder for better performance with large maps
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: count,
           itemBuilder: (context, index) {
-            final entry = entries[index]; // Access the pre-calculated entry
+            final entry = map.entries.toList()[index];
             return _buildJsonTree(context, entry.value, keyName: entry.key.toString(), isRoot: false);
           },
         )
@@ -327,55 +332,31 @@ class _MyJsonViewState extends State<MyJsonView> {
     );
   }
 
-  /// Builds a [JsonExpandableTile] for a [List] node.
+  /// Builds a widget for a List node.
   Widget _buildListNode(
     BuildContext context,
     List list, {
     String? keyName,
     bool isRoot = false,
   }) {
-    final int count = list.length;
-    final String comment = _buildCountString(count, _style.itemsInfoLabel, _style.objectInfoStyle);
-
-    // Pre-calculate header widgets
-    final headerExpanded = _buildKeyValueTitleWithInfo(
-        context,
-        keyName,
-        _style.alwaysShowObjectCount || _style.showStartAndEndBrackets || count == 0 ? '[' : '',
-        _style.alwaysShowObjectCount && !_style.showStartAndEndBrackets
-            ? comment
-            : _style.alwaysShowObjectCount &&
-                    _style.showStartAndEndBrackets &&
-                    _style.objectInfoStyle != ObjectInfoStyle.truncated &&
-                    count > 1
-                ? ' // $comment '
-                : '',
-        _style.alwaysShowObjectCount && !_style.showStartAndEndBrackets
-            ? ']'
-            : count == 0
-                ? '0]'
-                : '',
-        _style.showStartAndEndBrackets);
-    final headerCollapsed = _buildKeyValueTitleWithInfo(
-      context,
-      keyName,
-      '[',
-      comment,
-      ']',
-      false,
+    final count = list.length;
+    final headers = _buildHeaders(
+      keyName: keyName,
+      count: count,
+      openBracket: '[',
+      closeBracket: ']',
+      infoLabel: _style.itemsInfoLabel,
     );
-
     return JsonExpandableTile(
       childrenLength: count,
-      headerExpanded: headerExpanded,
-      headerCollapsed: headerCollapsed,
+      headerExpanded: headers['expanded']!,
+      headerCollapsed: headers['collapsed']!,
       indent: kIndent,
       controller: widget.controller,
       isRoot: isRoot,
       footer: _style.showStartAndEndBrackets ? _buildBracketWidget(context, ']') : const SizedBox.shrink(),
       showIndentGuide: _style.showIndentGuide,
       children: [
-        // Use ListView.builder for better performance with large lists
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -388,29 +369,30 @@ class _MyJsonViewState extends State<MyJsonView> {
     );
   }
 
-  /// Builds a widget for a primitive value (String, number, boolean, or null).
+  /// Builds a widget for a primitive value (String, number, bool, or null).
   Widget _buildPrimitiveNode(BuildContext context, dynamic data, {String? keyName}) {
-    // Simplify: No need for a container if there's no keyName
-    if (keyName == null) {
-      return _selectableText(_buildValueTextSpan(context, data).children!);
+    // Build the value spans using the helper method.
+    final List<InlineSpan> valueSpans = [_buildValueTextSpan(context, data)];
+    if (keyName != null) {
+      // Use _buildKeySpan to handle array style keys like [0].
+      final TextSpan keySpan = _buildKeySpan(context, keyName);
+      return Padding(
+        padding: const EdgeInsets.only(left: kExtraIndent),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _selectableText(keySpan.children ?? [keySpan]),
+            Expanded(child: _selectableText(valueSpans)),
+          ],
+        ),
+      );
     }
-
-    return Container(
+    return Padding(
       padding: const EdgeInsets.only(left: kExtraIndent),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Use a single RichText for the key and colon
-          IntrinsicWidth(
-            child: _selectableText(
-              TextSpan(children: [
-                ..._highlightText(keyName, _style.keyTextStyle),
-                TextSpan(text: ' : ', style: _style.bracketTextStyle)
-              ]).children!,
-            ),
-          ),
-          const SizedBox(width: 4),
-          Expanded(child: _selectableText(_buildValueTextSpan(context, data).children!)),
+          Expanded(child: _selectableText(valueSpans)),
         ],
       ),
     );

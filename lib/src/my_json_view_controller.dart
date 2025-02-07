@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 /// matching text. The actual filtering is now visual, using
 /// `_highlightText` method on `MyJsonView`.
 ///
+/// {@template MyJsonViewController.example}
 /// **Example Usage:**
 ///
 /// ```dart
@@ -48,27 +49,36 @@ import 'package:flutter/material.dart';
 ///  )
 ///
 /// ```
+/// {@endtemplate}
 class MyJsonViewController extends ChangeNotifier {
+  /// Creates a [MyJsonViewController].
+  MyJsonViewController();
+
   String _filterQuery = "";
   bool _isExpanded = true;
   dynamic _json = {};
   // dynamic _filteredJson; // Cache the filtered JSON
 
-  /// Whether all nodes are currently expanded.  This affects all
-  /// [JsonExpandableTile] widgets that are using this controller (except
-  /// for the root tile).
+  /// Whether all nodes are currently expanded.
+  ///
+  /// This affects all [JsonExpandableTile] widgets that are using this
+  /// controller (except for the root tile).
   bool get isExpanded => _isExpanded;
 
-  /// Whether all nodes are currently collapsed. This is simply the inverse
-  /// of [isExpanded].
+  /// Whether all nodes are currently collapsed.
+  ///
+  /// This is simply the inverse of [isExpanded].
   bool get isCollapsed => !_isExpanded;
 
-  /// The current search query.  Setting this to a non-empty string will
-  /// trigger a visual update to highlight matching text in the JSON view.
+  /// The current search query.
+  ///
+  /// Setting this to a non-empty string will trigger a visual update to
+  /// highlight matching text in the JSON view.
   String get filterQuery => _filterQuery;
 
-  /// Indicates whether a filter is currently active. Returns `true` if
-  /// [filterQuery] is not empty, `false` otherwise.
+  /// Indicates whether a filter is currently active.
+  ///
+  /// Returns `true` if [filterQuery] is not empty, `false` otherwise.
   bool get isFiltered => _filterQuery.isNotEmpty;
 
   /// The currently loaded JSON data.
@@ -86,19 +96,22 @@ class MyJsonViewController extends ChangeNotifier {
   /// as the JSON data, which will be displayed by [MyJsonView].
   set json(dynamic input) {
     _json = _parseJson(input);
-    // _filteredJson = null; // Reset filtered JSON when new data is loaded.  Important!
     notifyListeners();
   }
 
-  /// Expands all JSON nodes.  This will affect all [JsonExpandableTile]
-  /// widgets that are using this controller (except for the root tile).
+  /// Expands all JSON nodes.
+  ///
+  /// This will affect all [JsonExpandableTile] widgets that are using this
+  /// controller (except for the root tile).
   void expandAll() {
     _isExpanded = true;
     notifyListeners();
   }
 
-  /// Collapses all JSON nodes. This will affect all [JsonExpandableTile]
-  /// widgets that are using this controller (except for the root tile).
+  /// Collapses all JSON nodes.
+  ///
+  /// This will affect all [JsonExpandableTile] widgets that are using this
+  /// controller (except for the root tile).
   void collapseAll() {
     _isExpanded = false;
     notifyListeners();
@@ -116,61 +129,21 @@ class MyJsonViewController extends ChangeNotifier {
       return; // Avoid unnecessary filtering if the query hasn't changed.
     }
     _filterQuery = query;
-    // _filteredJson = _filterJson(_json); // Perform filtering and store in _filteredJson.  More efficient.
     notifyListeners();
   }
 
-  /// Clears the current search query. Resets the view to the original JSON data.
+  /// Clears the current search query.
   ///
-  /// If the current [_filterQuery] is already empty, this method does
-  /// nothing to avoid unnecessary updates.
+  /// Resets the view to the original JSON data.  If the current
+  /// [_filterQuery] is already empty, this method does nothing to avoid
+  /// unnecessary updates.
   void clearFilter() {
     if (_filterQuery.isEmpty) {
       return; // Avoid unnecessary updates.
     }
     _filterQuery = "";
-    // _filteredJson = null; // Clear the filtered JSON.
     notifyListeners();
   }
-
-  /// Filters the JSON data based on the current search query.
-  ///
-  /// This method recursively traverses the JSON data (maps and lists)
-  /// and returns a new structure containing only the matching elements.
-  /// If no matches are found, it returns an error object.  This method
-  /// is optimized to avoid unnecessary recursion when the query is empty.
-  ///
-  /// [data] The JSON data to filter.
-  /// [query] The optional search query.  If null, uses the current `_searchQuery`.
-  /// Returns the filtered JSON data, or an error object if no matches are found.
-  // dynamic _filterJson(dynamic data) {
-  //   final filterQuery = _filterQuery;
-  //   if (filterQuery.isEmpty) return data;
-
-  //   final lowerQuery = filterQuery.toLowerCase();
-
-  //   if (data is Map) {
-  //     final newMap = <String, dynamic>{};
-  //     for (final entry in data.entries) {
-  //       final keyMatches = entry.key.toLowerCase().contains(lowerQuery);
-  //       final filteredValue = _filterJson(entry.value);
-  //       if (keyMatches) {
-  //         newMap[entry.key] = entry.value;
-  //       } else if (filteredValue != null) {
-  //         newMap[entry.key] = filteredValue;
-  //       }
-  //     }
-  //     return newMap.isNotEmpty ? newMap : null;
-  //   }
-
-  //   if (data is List) {
-  //     final newList = data.map((item) => _filterJson(item)).where((item) => item != null).toList();
-  //     return newList.isNotEmpty ? newList : null;
-  //   }
-
-  //   final dataStr = data is String ? data.toLowerCase() : data?.toString().toLowerCase() ?? '';
-  //   return dataStr.contains(lowerQuery) ? data : null;
-  // }
 
   /// Attempts to parse JSON input.
   ///

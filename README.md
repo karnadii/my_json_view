@@ -6,7 +6,6 @@ A customizable Flutter widget for displaying JSON data in a user-friendly, expan
 
 # Demo
 Check the demo at [https://karnadii.github.io/my_json_view/](https://karnadii.github.io/my_json_view/)
-I don't know why the expand icon look off when expanded in the demo, in debug mode it looks nice, nothing off.
 
 ## Screenshots
 | Screenshot 1 | Screenshot 2 | Screenshot 3 |

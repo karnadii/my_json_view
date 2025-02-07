@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-/// A customizable expand/collapse icon widget that animates between expanded
-/// and collapsed states.
+/// A customizable animated expand/collapse icon widget.
 ///
-/// This widget displays an icon that rotates smoothly when pressed, providing
-/// visual feedback to the user.  It uses a [Material] widget with an
-/// [InkWell] to handle tap events and provide a splash effect.  The appearance
-/// and behavior of the icon can be customized through various properties.
+/// This widget displays an icon that smoothly rotates when pressed,
+/// providing visual feedback to the user. It uses a [Material] widget
+/// with an [InkWell] to handle tap events and provide a splash effect.
+/// The appearance and behavior of the icon can be customized through
+/// various properties.
 ///
 /// {@template MyExpandIcon.example}
 /// **Example:**
@@ -29,46 +29,12 @@ import 'package:flutter/material.dart';
 /// ```
 /// {@endtemplate}
 class MyExpandIcon extends StatefulWidget {
-  /// Whether the icon is currently in the expanded state.
-  final bool isExpanded;
-
-  /// Callback function triggered when the icon is pressed.
-  ///
-  /// Provides the new expanded state (the opposite of the current state).
-  final ValueChanged<bool> onPressed;
-
-  /// The icon to display. Defaults to `Icons.arrow_drop_down`.
-  final IconData icon;
-
-  /// The color of the icon. If [hoverColor] is specified, this color
-  /// is used when the icon is not hovered. If not specified, defaults to the
-  /// theme's `onSurface` color.
-  final Color? color;
-
-  /// The color of the icon when hovered. If not specified, defaults to [color].
-  final Color? hoverColor;
-
-  /// The splash color of the [InkWell].
-  final Color? splashColor;
-
-  /// The duration of the rotation animation. Defaults to 300 milliseconds.
-  final Duration duration;
-
-  /// The size of the icon. Defaults to 24.
-  final double? size;
-
-  /// The padding around the icon. Defaults to 8 on all sides.
-  final EdgeInsetsGeometry? padding;
-
-  /// The number of turns to rotate the icon when expanded. Defaults to 0.0
-  /// (no rotation).  A value of 0.5 would rotate the icon 180 degrees.
-  final double turnsExpanded;
-
-  /// The number of turns to rotate the icon when collapsed. Defaults to -0.25
-  /// (a slight counter-clockwise rotation).
-  final double turnsCollapsed;
-
   /// Creates a [MyExpandIcon].
+  ///
+  /// The [onPressed] callback is required and is triggered when the icon
+  /// is tapped. The [isExpanded] parameter determines the initial state
+  /// of the icon. Other properties allow customization of the icon's
+  /// appearance and animation.
   const MyExpandIcon({
     super.key,
     this.isExpanded = false,
@@ -83,6 +49,65 @@ class MyExpandIcon extends StatefulWidget {
     this.turnsExpanded = 0.0,
     this.turnsCollapsed = -0.25,
   });
+
+  /// Whether the icon is currently in the expanded state.
+  ///
+  /// Defaults to `false`.
+  final bool isExpanded;
+
+  /// Callback function triggered when the icon is pressed.
+  ///
+  /// Provides the new expanded state (the opposite of the current state)
+  /// as a parameter.
+  final ValueChanged<bool> onPressed;
+
+  /// The icon to display.
+  ///
+  /// Defaults to [Icons.arrow_drop_down].
+  final IconData icon;
+
+  /// The color of the icon.
+  ///
+  /// If [hoverColor] is specified, this color is used when the icon is
+  /// not hovered.  If not specified, defaults to the theme's `onSurface`
+  /// color.
+  final Color? color;
+
+  /// The color of the icon when hovered.
+  ///
+  /// If not specified, defaults to [color].
+  final Color? hoverColor;
+
+  /// The splash color of the [InkWell].
+  ///
+  /// This color is used for the ripple effect when the icon is tapped.
+  final Color? splashColor;
+
+  /// The duration of the rotation animation.
+  ///
+  /// Defaults to 300 milliseconds.
+  final Duration duration;
+
+  /// The size of the icon.
+  ///
+  /// Defaults to 24.
+  final double? size;
+
+  /// The padding around the icon.
+  ///
+  /// Defaults to 8 on all sides.
+  final EdgeInsetsGeometry? padding;
+
+  /// The number of turns to rotate the icon when expanded.
+  ///
+  /// Defaults to 0.0 (no rotation). A value of 0.5 would rotate the
+  /// icon 180 degrees.
+  final double turnsExpanded;
+
+  /// The number of turns to rotate the icon when collapsed.
+  ///
+  /// Defaults to -0.25 (a slight counter-clockwise rotation).
+  final double turnsCollapsed;
 
   @override
   State<MyExpandIcon> createState() => _MyExpandIconState();
@@ -106,7 +131,7 @@ class _MyExpandIconState extends State<MyExpandIcon> {
         child: InkWell(
           // Keep InkWell for the splash effect
           onTap: () => widget.onPressed(!widget.isExpanded),
-          splashColor: widget.splashColor, // Use splashColor if provided
+          splashColor: Colors.transparent, // Use splashColor if provided
           customBorder: const CircleBorder(),
           child: AnimatedRotation(
             duration: widget.duration,

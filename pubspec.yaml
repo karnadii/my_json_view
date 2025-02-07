@@ -1,5 +1,5 @@
 name: my_json_view
-version: 1.0.0
+version: 1.0.1
 description: A customizable Flutter widget for displaying JSON data in a tree view with search and expand/collapse functionality.
 homepage: https://github.com/karnadii/my_json_view
 repository: https://github.com/karnadii/my_json_view

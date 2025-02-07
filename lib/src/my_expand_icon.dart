@@ -119,8 +119,9 @@ class _MyExpandIconState extends State<MyExpandIcon> {
   @override
   Widget build(BuildContext context) {
     final Color onSurfaceColor = Theme.of(context).colorScheme.onSurface;
-    final effectiveColor =
-        _isHovered ? widget.hoverColor ?? widget.color ?? onSurfaceColor : widget.color ?? onSurfaceColor;
+    final effectiveColor = _isHovered
+        ? widget.hoverColor ?? widget.color ?? onSurfaceColor
+        : widget.color ?? onSurfaceColor;
 
     return Material(
       color: Colors.transparent,
@@ -136,7 +137,9 @@ class _MyExpandIconState extends State<MyExpandIcon> {
           child: AnimatedRotation(
             duration: widget.duration,
             curve: Curves.easeInOut,
-            turns: widget.isExpanded ? widget.turnsExpanded : widget.turnsCollapsed, // Use the new properties
+            turns: widget.isExpanded
+                ? widget.turnsExpanded
+                : widget.turnsCollapsed, // Use the new properties
             child: Icon(
               widget.icon,
               color: effectiveColor,

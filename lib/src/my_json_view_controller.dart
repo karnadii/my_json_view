@@ -166,7 +166,8 @@ class MyJsonViewController extends ChangeNotifier {
     }
     return {
       "success": false,
-      "error": "Unsupported JSON format, please provide a Map<String, dynamic>, List<dynamic> or a JSON String",
+      "error":
+          "Unsupported JSON format, please provide a Map<String, dynamic>, List<dynamic> or a JSON String",
     };
   }
 }

@@ -159,7 +159,9 @@ class _JsonExpandableTileState extends State<JsonExpandableTile> {
   void _handleControllerChange() {
     // Only update if the controller's expanded state differs from the local state.
     // This prevents unnecessary rebuilds.
-    if (widget.controller != null && widget.controller!.isExpanded != _isExpanded && !widget.isRoot) {
+    if (widget.controller != null &&
+        widget.controller!.isExpanded != _isExpanded &&
+        !widget.isRoot) {
       setState(() {
         _isExpanded = widget.controller!.isExpanded;
       });
@@ -171,10 +173,12 @@ class _JsonExpandableTileState extends State<JsonExpandableTile> {
     // Compute an effective painter color: if the tile is expanded
     // and the user wants to show the indent guide, use the theme color;
     // otherwise make it transparent.
-    final effectiveColor = (_isExpanded && widget.showIndentGuide && widget.childrenLength > 0)
-        ? Theme.of(context).colorScheme.outlineVariant
-        : Colors.transparent;
-    final Widget header = _isExpanded ? widget.headerExpanded : widget.headerCollapsed;
+    final effectiveColor =
+        (_isExpanded && widget.showIndentGuide && widget.childrenLength > 0)
+            ? Theme.of(context).colorScheme.outlineVariant
+            : Colors.transparent;
+    final Widget header =
+        _isExpanded ? widget.headerExpanded : widget.headerCollapsed;
     return CustomPaint(
       painter: _MyIndentGuidePainter(
         color: effectiveColor,
@@ -222,9 +226,11 @@ class _JsonExpandableTileState extends State<JsonExpandableTile> {
               child: ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: widget.children.length + (widget.footer != null ? 1 : 0),
+                itemCount:
+                    widget.children.length + (widget.footer != null ? 1 : 0),
                 itemBuilder: (context, index) {
-                  if (index == widget.children.length && widget.footer != null) {
+                  if (index == widget.children.length &&
+                      widget.footer != null) {
                     return Padding(
                       padding: const EdgeInsets.only(left: 5),
                       child: widget.footer!,

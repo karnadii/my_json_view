@@ -97,7 +97,8 @@ class _MyJsonViewState extends State<MyJsonView> {
       _style = widget.style ?? MyJsonViewStyle.defaultStyle();
     }
     // Update JSON only if the controller or the JSON itself changes.
-    if (widget.controller != oldWidget.controller || widget.json != oldWidget.json) {
+    if (widget.controller != oldWidget.controller ||
+        widget.json != oldWidget.json) {
       widget.controller.json = widget.json;
     }
   }
@@ -117,7 +118,8 @@ class _MyJsonViewState extends State<MyJsonView> {
     int currentIndex = 0;
     for (final match in matches) {
       if (match.start > currentIndex) {
-        spans.add(TextSpan(text: text.substring(currentIndex, match.start), style: style));
+        spans.add(TextSpan(
+            text: text.substring(currentIndex, match.start), style: style));
       }
       spans.add(TextSpan(
         text: text.substring(match.start, match.end),
@@ -147,7 +149,8 @@ class _MyJsonViewState extends State<MyJsonView> {
       itemBuilder: (context, index) {
         return Padding(
           padding: const EdgeInsets.all(8.0),
-          child: _buildJsonTree(context, effectiveJson, isRoot: true, keyName: 'root'),
+          child: _buildJsonTree(context, effectiveJson,
+              isRoot: true, keyName: 'root'),
         );
       },
     );
@@ -202,7 +205,9 @@ class _MyJsonViewState extends State<MyJsonView> {
     spans.add(TextSpan(text: bracketStart, style: _style.bracketTextStyle));
     spans.add(TextSpan(
       text: comment,
-      style: italic ? _style.metaTextStyle : _style.metaTextStyle.copyWith(fontStyle: FontStyle.normal),
+      style: italic
+          ? _style.metaTextStyle
+          : _style.metaTextStyle.copyWith(fontStyle: FontStyle.normal),
     ));
     spans.add(TextSpan(text: bracketEnd, style: _style.bracketTextStyle));
 
@@ -233,7 +238,8 @@ class _MyJsonViewState extends State<MyJsonView> {
   }
 
   /// Constructs a text span for a value with highlighting.
-  TextSpan _buildValueSpan(BuildContext context, String value, TextStyle style) {
+  TextSpan _buildValueSpan(
+      BuildContext context, String value, TextStyle style) {
     return TextSpan(children: _highlightText(value, style));
   }
 
@@ -263,7 +269,11 @@ class _MyJsonViewState extends State<MyJsonView> {
     final headerExpanded = _buildKeyValueTitleWithInfo(
       context,
       keyName,
-      _style.alwaysShowObjectCount || _style.showStartAndEndBrackets || count == 0 ? openBracket : '',
+      _style.alwaysShowObjectCount ||
+              _style.showStartAndEndBrackets ||
+              count == 0
+          ? openBracket
+          : '',
       _style.alwaysShowObjectCount && !_style.showStartAndEndBrackets
           ? comment
           : _style.alwaysShowObjectCount &&
@@ -316,7 +326,9 @@ class _MyJsonViewState extends State<MyJsonView> {
       indent: kIndent,
       controller: widget.controller,
       isRoot: isRoot,
-      footer: _style.showStartAndEndBrackets ? _buildBracketWidget(context, '}') : const SizedBox.shrink(),
+      footer: _style.showStartAndEndBrackets
+          ? _buildBracketWidget(context, '}')
+          : const SizedBox.shrink(),
       showIndentGuide: _style.showIndentGuide,
       children: [
         ListView.builder(
@@ -325,7 +337,8 @@ class _MyJsonViewState extends State<MyJsonView> {
           itemCount: count,
           itemBuilder: (context, index) {
             final entry = map.entries.toList()[index];
-            return _buildJsonTree(context, entry.value, keyName: entry.key.toString(), isRoot: false);
+            return _buildJsonTree(context, entry.value,
+                keyName: entry.key.toString(), isRoot: false);
           },
         )
       ],
@@ -354,7 +367,9 @@ class _MyJsonViewState extends State<MyJsonView> {
       indent: kIndent,
       controller: widget.controller,
       isRoot: isRoot,
-      footer: _style.showStartAndEndBrackets ? _buildBracketWidget(context, ']') : const SizedBox.shrink(),
+      footer: _style.showStartAndEndBrackets
+          ? _buildBracketWidget(context, ']')
+          : const SizedBox.shrink(),
       showIndentGuide: _style.showIndentGuide,
       children: [
         ListView.builder(
@@ -362,7 +377,8 @@ class _MyJsonViewState extends State<MyJsonView> {
           physics: const NeverScrollableScrollPhysics(),
           itemCount: count,
           itemBuilder: (context, index) {
-            return _buildJsonTree(context, list[index], keyName: '[$index]', isRoot: false);
+            return _buildJsonTree(context, list[index],
+                keyName: '[$index]', isRoot: false);
           },
         )
       ],
@@ -370,7 +386,8 @@ class _MyJsonViewState extends State<MyJsonView> {
   }
 
   /// Builds a widget for a primitive value (String, number, bool, or null).
-  Widget _buildPrimitiveNode(BuildContext context, dynamic data, {String? keyName}) {
+  Widget _buildPrimitiveNode(BuildContext context, dynamic data,
+      {String? keyName}) {
     // Build the value spans using the helper method.
     final List<InlineSpan> valueSpans = [_buildValueTextSpan(context, data)];
     if (keyName != null) {

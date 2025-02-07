@@ -245,7 +245,8 @@ class MyJsonViewStyle {
   static const bool _defaultAlwaysShowObjectCount = true;
   static const bool _defaultShowEndBrackets = true;
   static const bool _defaultShowIndentGuide = true;
-  static const ObjectInfoStyle _defaultObjectInfoStyle = ObjectInfoStyle.annotated;
+  static const ObjectInfoStyle _defaultObjectInfoStyle =
+      ObjectInfoStyle.annotated;
 
   /// Creates a [MyJsonViewStyle] with default values.
   factory MyJsonViewStyle.defaultStyle() => MyJsonViewStyle();
@@ -346,8 +347,10 @@ class MyJsonViewStyle {
       fontFamily: fontFamily ?? this.fontFamily,
       propsInfoLabel: propsInfoLabel ?? this.propsInfoLabel,
       itemsInfoLabel: itemsInfoLabel ?? this.itemsInfoLabel,
-      alwaysShowObjectCount: alwaysShowObjectCount ?? this.alwaysShowObjectCount,
-      showStartAndEndBrackets: showStartAndEndBrackets ?? this.showStartAndEndBrackets,
+      alwaysShowObjectCount:
+          alwaysShowObjectCount ?? this.alwaysShowObjectCount,
+      showStartAndEndBrackets:
+          showStartAndEndBrackets ?? this.showStartAndEndBrackets,
       showIndentGuide: showIndentGuide ?? this.showIndentGuide,
       objectInfoStyle: objectInfoStyle ?? this.objectInfoStyle,
     );
@@ -363,7 +366,8 @@ class MyJsonViewStyle {
       fontFamilyFallback: _defaultFallBackFonts);
 
   /// Returns a [TextStyle] for metadata elements.
-  TextStyle get metaTextStyle => _getTextStyle(metaColor).copyWith(fontStyle: FontStyle.italic);
+  TextStyle get metaTextStyle =>
+      _getTextStyle(metaColor).copyWith(fontStyle: FontStyle.italic);
 
   /// Returns a [TextStyle] for key elements.
   TextStyle get keyTextStyle => _getTextStyle(keyColor);

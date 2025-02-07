@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_json_view/my_json_view.dart';
+import 'package:re_highlight/styles/atom-one-dark.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,8 +33,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _controller = MyJsonViewController();
-  final _style = MyJsonViewStyle.defaultStyle();
-  bool _useString = false;
+  final _style = MyJsonViewStyle.fromHighlightTheme(atomOneDarkTheme);
 
   final dynamic _jsonData = {
     "company": "Acme Corp",
@@ -149,116 +149,12 @@ class _MyHomePageState extends State<MyHomePage> {
     ],
   };
 
-  final _jsonString = '''
-{
-  "library": {
-    "books": [
-      {
-        "title": "The Lord of the Rings",
-        "author": "J.R.R. Tolkien",
-        "genre": "Fantasy",
-        "year": 1954,
-        "chapters": [
-          {"title": "A Long-expected Party"},
-          {"title": "The Shadow of the Past"},
-          {"title": "Three is Company"}
-        ]
-      },
-      {
-        "title": "Pride and Prejudice",
-        "author": "Jane Austen",
-        "genre": "Romance",
-        "year": 1813,
-        "chapters": [
-          {"title": "Chapter 1"},
-          {"title": "Chapter 2"},
-          {"title": "Chapter 3"}
-        ]
-      },
-      {
-        "title": "1984",
-        "author": "George Orwell",
-        "genre": "Dystopian",
-        "year": 1949,
-        "chapters": [
-          {"title": "Part 1, Chapter 1"},
-          {"title": "Part 1, Chapter 2"},
-          {"title": "Part 1, Chapter 3"}
-        ]
-      },
-      {
-        "title": "The Lord of the Rings",
-        "author": "J.R.R. Tolkien",
-        "genre": "Fantasy",
-        "year": 1954,
-        "chapters": [
-          {"title": "A Long-expected Party"},
-          {"title": "The Shadow of the Past"},
-          {"title": "Three is Company"}
-        ]
-      },
-      {
-        "title": "Pride and Prejudice",
-        "author": "Jane Austen",
-        "genre": "Romance",
-        "year": 1813,
-        "chapters": [
-          {"title": "Chapter 1"},
-          {"title": "Chapter 2"},
-          {"title": "Chapter 3"}
-        ]
-      },
-      {
-        "title": "1984",
-        "author": "George Orwell",
-        "genre": "Dystopian",
-        "year": 1949,
-        "chapters": [
-          {"title": "Part 1, Chapter 1"},
-          {"title": "Part 1, Chapter 2"},
-          {"title": "Part 1, Chapter 3"}
-        ]
-      }
-    ],
-    "magazines": [
-      {
-        "title": "National Geographic",
-        "publisher": "National Geographic Society",
-        "frequency": "Monthly",
-        "articles": [
-          {"title": "The Amazon Rainforest", "author": "John Smith"},
-          {"title": "The Great Barrier Reef", "author": "Jane Doe"}
-        ]
-      },
-      {
-        "title": "Time",
-        "publisher": "Time USA, LLC",
-        "frequency": "Weekly",
-        "articles": [
-          {"title": "The State of the Economy", "author": "Peter Jones"},
-          {"title": "The Future of Technology", "author": "Mary Green"}
-        ]
-      }
-    ]
-  }
-}
-''';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _useString = !_useString;
-              });
-            },
-            tooltip: 'Toggle JSON Source',
-            icon: Icon(_useString ? Icons.data_object : Icons.text_snippet),
-          ),
           IconButton(
             onPressed: () => _controller.expandAll(),
             tooltip: 'Expand All',
@@ -292,11 +188,11 @@ class _MyHomePageState extends State<MyHomePage> {
               style: _style.copyWith(
                 alwaysShowObjectCount: true,
                 objectInfoStyle: ObjectInfoStyle.annotated,
-                showStartAndEndBrackets: false,
+                showStartAndEndBrackets: true,
                 showIndentGuide: true,
               ),
               controller: _controller,
-              json: _useString ? _jsonString : _jsonData,
+              json: _jsonData,
             ),
           ),
         ],

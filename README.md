@@ -1,39 +1,147 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+# MyJsonView
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+A customizable Flutter widget for displaying JSON data in a user-friendly, expandable, and searchable tree view.
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+## Screenshots
+| Screenshot 1 | Screenshot 2 | Screenshot 3 |
+|------------|------------|------------|
+| ![Screenshot 1](https://raw.githubusercontent.com/karnadii/my_json_view/main/img/ss1.png) | ![Screenshot 2](https://raw.githubusercontent.com/karnadii/my_json_view/main/img/ss2.png) | ![Screenshot 3](https://raw.githubusercontent.com/karnadii/my_json_view/main/img/ss3.png) |
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- 🌳 Interactive tree view with expand/collapse functionality
+- 🔍 Search and highlight functionality for both keys and values
+- 🎨 Customizable appearance with `MyJsonViewStyle`
+- 📋 Selectable text for easy copying
 
-## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+
+## Installation
+
+Add this to your package's `pubspec.yaml` file:
+
+```yaml
+dependencies:
+  my_json_view: ^1.0.0
+```
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+### Basic Usage
 
 ```dart
-const like = 'sample';
+import 'package:my_json_view/my_json_view.dart';
+
+final controller = MyJsonViewController();
+MyJsonView(
+  json: {'name': 'John Doe', 'age': 30},
+  controller: controller,
+);
+
 ```
 
-## Additional information
+### With Custom Style
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+```dart
+final style = MyJsonViewStyle(
+  fontSize: 16.0,
+  keyColor: Colors.blue,
+  stringColor: Colors.green,
+  numberColor: Colors.orange,
+  booleanColor: Colors.purple,
+  nullColor: Colors.red,
+  fontFamily: 'Roboto Mono',
+  showIndentGuide: true,
+  objectInfoStyle: ObjectInfoStyle.annotated,
+);
+
+MyJsonView(
+  json: yourJsonData,
+  style: style,
+  controller: MyJsonViewController(),
+);
+```
+
+### With Search Functionality
+
+```dart
+final controller = MyJsonViewController();
+
+Column(
+  children: [
+    TextField(
+      onChanged: (value) {
+        setState(() {
+            controller.filter(value);
+        });
+      },
+    ),
+    Expanded(
+      child: MyJsonView(
+        json: yourJsonData,
+        controller: controller,
+      ),
+    ),
+  ],
+);
+
+```
+### With Expand/Collapse Controls
+
+```dart
+final controller = MyJsonViewController();
+
+Row(
+  children: [
+    IconButton(
+      onPressed: () => controller.expandAll(),
+      icon: Icon(Icons.expand),
+    ),
+    IconButton(
+      onPressed: () => controller.collapseAll(),
+      icon: Icon(Icons.compress),
+    ),
+    Expanded(
+      child: MyJsonView(
+        json: yourJsonData,
+        controller: controller,
+      ),
+    ),
+  ],
+);
+```
+
+## Customization
+
+### Style Properties
+
+- `fontSize`: Font size for all text elements
+- `fontWeight`: Font weight for all text elements
+- `fontStyle`: Font style for all text elements
+- `fontFamily`: Font family for all text elements
+- `keyColor`: Color for object keys
+- `stringColor`: Color for string values
+- `numberColor`: Color for number values
+- `booleanColor`: Color for boolean values
+- `nullColor`: Color for null values
+- `bracketColor`: Color for brackets and colons
+- `metaColor`: Color for metadata (e.g., object/array counts)
+- `showIndentGuide`: Whether to show vertical indent guides
+- `showStartAndEndBrackets`: Whether to show opening/closing brackets
+- `objectInfoStyle`: How to display object/array information (truncated/concise/annotated)
+
+### Controller Features
+
+- `expandAll()`: Expands all nodes
+- `collapseAll()`: Collapses all nodes
+- `filter(String query)`: Highlights text matching the query
+- `clearFilter()`: Clears the current search filter
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
